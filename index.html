@@ -3,82 +3,178 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Amr Gamal — Software Engineer</title>
+  <title>Amr Gamal — AI Software Engineer</title>
   <meta name="description" content="Amr Gamal — Software engineer building AI-powered products and AI agents. Cairo, Egypt." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <canvas id="net" aria-hidden="true"></canvas>
+
   <header class="nav">
-    <a class="logo" href="#top">Amr Gamal</a>
+    <a class="brand" href="#top">AG</a>
     <nav>
       <a href="#about">About</a>
-      <a href="#work">Work</a>
-      <a href="#focus">Focus</a>
+      <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
+      <a href="#stack">Stack</a>
       <a href="#contact">Contact</a>
     </nav>
+    <a class="nav-cta" href="https://www.linkedin.com/in/amr-gamal-a274b9213/" target="_blank" rel="noopener">LinkedIn</a>
   </header>
 
   <main id="top">
     <section class="hero">
-      <p class="role">Software Engineer · AI products &amp; agents</p>
-      <h1>Building software that connects products to AI.</h1>
-      <p class="lede">I design and ship AI-powered features and agents with clear UX and solid engineering. Based in Cairo, Egypt.</p>
-      <div class="actions">
-        <a class="btn primary" href="https://www.linkedin.com/in/amr-gamal-a274b9213/" target="_blank" rel="noopener">LinkedIn</a>
-        <a class="btn secondary" href="https://github.com/amrgamal194" target="_blank" rel="noopener">GitHub</a>
+      <p class="welcome">Welcome to my portfolio</p>
+      <h1 class="name-grad">AMR GAMAL</h1>
+      <p class="role">Software Engineer · AI Products &amp; Agents</p>
+      <div class="hero-icons" aria-hidden="true">
+        <span class="hicon">🧠</span>
+        <span class="hicon">⚡</span>
+        <span class="hicon">🤖</span>
+      </div>
+      <p class="tagline">Building <span>AI-powered software</span> and intelligent agents that ship.</p>
+      <div class="hero-actions">
+        <a class="btn btn-grad" href="#projects">View projects</a>
+        <a class="btn btn-outline" href="#contact">Let's connect</a>
       </div>
     </section>
 
-    <section id="about" class="section">
-      <h2>About</h2>
-      <p>I'm Amr Gamal, a software engineer focused on practical AI — agents that automate real workflows and product features teams can trust.</p>
+    <section id="about" class="section about">
+      <h2>About Me</h2>
+      <div class="about-grid">
+        <div class="avatar-wrap">
+          <div class="avatar-ring">
+            <div class="avatar-inner">AG</div>
+          </div>
+          <div class="orbit" aria-hidden="true"></div>
+        </div>
+        <div class="about-copy">
+          <h3>Hi — I'm Amr.</h3>
+          <p>I build software that connects real products to AI: intelligent features inside apps, and agents that automate workflows end to end.</p>
+          <p>Based in Cairo, Egypt. Focused on clear UX, practical AI, and shipping work you can trust.</p>
+          <div class="about-pills">
+            <span>AI agents</span>
+            <span>Product engineering</span>
+            <span>Modern web</span>
+          </div>
+          <blockquote>“Build software that thinks with you.”</blockquote>
+        </div>
+      </div>
     </section>
 
-    <section id="focus" class="section">
-      <h2>Focus</h2>
-      <ul class="focus-list">
-        <li><strong>AI agents</strong> — tool use, automation, orchestration</li>
-        <li><strong>AI × product</strong> — embedding intelligence in web apps</li>
-        <li><strong>Frontend</strong> — HTML, CSS, JavaScript, TypeScript</li>
-        <li><strong>Delivery</strong> — from idea to shipped software on GitHub</li>
-      </ul>
+    <section id="projects" class="section">
+      <h2 class="grad-pink">Featured Projects</h2>
+      <p class="section-sub">Selected work across UI, media, and AI-oriented product thinking.</p>
+      <div class="proj-grid">
+        <article class="proj-card">
+          <div class="proj-top">
+            <div class="proj-icon c1">🛒</div>
+            <a class="proj-link" href="https://github.com/amrgamal194/E-commarce" target="_blank" rel="noopener" aria-label="Open on GitHub">↗</a>
+          </div>
+          <h3>E-commarce</h3>
+          <p>E-commerce storefront UI focused on clean layout and shopping flows.</p>
+          <div class="badges"><span>HTML</span><span>CSS</span><span>UI</span></div>
+        </article>
+        <article class="proj-card">
+          <div class="proj-top">
+            <div class="proj-icon c2">🎬</div>
+            <a class="proj-link" href="https://github.com/amrgamal194/video" target="_blank" rel="noopener" aria-label="Open on GitHub">↗</a>
+          </div>
+          <h3>Video demos</h3>
+          <p>Media assets and product storytelling clips for interactive experiences.</p>
+          <div class="badges"><span>Media</span><span>Demo</span><span>GitHub</span></div>
+        </article>
+        <article class="proj-card">
+          <div class="proj-top">
+            <div class="proj-icon c3">🤖</div>
+            <a class="proj-link" href="https://github.com/amrgamal194" target="_blank" rel="noopener" aria-label="Open GitHub">↗</a>
+          </div>
+          <h3>AI agents track</h3>
+          <p>Exploring tool-using agents, automation loops, and AI-linked product features.</p>
+          <div class="badges"><span>AI</span><span>Agents</span><span>LLMs</span></div>
+        </article>
+      </div>
     </section>
 
-    <section id="work" class="section">
-      <h2>Selected work</h2>
-      <div class="work-list">
-        <a class="work-item" href="https://github.com/amrgamal194/E-commarce" target="_blank" rel="noopener">
-          <div>
-            <h3>E-commarce</h3>
-            <p>E-commerce storefront UI (HTML &amp; CSS)</p>
+    <section id="experience" class="section">
+      <h2>Experience</h2>
+      <div class="timeline">
+        <div class="tl-item left">
+          <div class="tl-card">
+            <h3>Software Engineer — AI products</h3>
+            <p class="tl-meta">Focus · Ongoing</p>
+            <p>Designing and shipping AI-powered features and agent workflows for real product use cases.</p>
+            <div class="badges"><span>AI</span><span>Agents</span><span>Web</span></div>
           </div>
-          <span class="ext">GitHub ↗</span>
-        </a>
-        <a class="work-item" href="https://github.com/amrgamal194/video" target="_blank" rel="noopener">
-          <div>
-            <h3>video</h3>
-            <p>Media and video demos</p>
+        </div>
+        <div class="tl-item right">
+          <div class="tl-card">
+            <h3>Frontend &amp; product UI</h3>
+            <p class="tl-meta">Projects · GitHub</p>
+            <p>Building responsive interfaces and demos — from storefronts to media-led experiences.</p>
+            <div class="badges"><span>HTML/CSS</span><span>JS/TS</span><span>UI</span></div>
           </div>
-          <span class="ext">GitHub ↗</span>
-        </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="stack" class="section">
+      <h2>Tech Stack</h2>
+      <div class="stack-grid">
+        <div class="stack-panel">
+          <h3>Languages</h3>
+          <div class="skill"><span>JavaScript / TypeScript</span><div class="bar"><i style="--p:90%"></i></div></div>
+          <div class="skill"><span>HTML / CSS</span><div class="bar"><i style="--p:95%"></i></div></div>
+          <div class="skill"><span>Python (AI tooling)</span><div class="bar"><i style="--p:70%"></i></div></div>
+        </div>
+        <div class="stack-panel">
+          <h3>AI &amp; Agents</h3>
+          <div class="skill"><span>LLM apps</span><div class="bar"><i style="--p:80%"></i></div></div>
+          <div class="skill"><span>AI agents / automation</span><div class="bar"><i style="--p:78%"></i></div></div>
+          <div class="skill"><span>Prompt &amp; tool design</span><div class="bar"><i style="--p:85%"></i></div></div>
+        </div>
+        <div class="stack-panel">
+          <h3>Product &amp; Web</h3>
+          <div class="skill"><span>Responsive UI</span><div class="bar"><i style="--p:92%"></i></div></div>
+          <div class="skill"><span>Product thinking</span><div class="bar"><i style="--p:82%"></i></div></div>
+          <div class="skill"><span>GitHub / shipping</span><div class="bar"><i style="--p:88%"></i></div></div>
+        </div>
+        <div class="stack-panel">
+          <h3>Tools</h3>
+          <div class="skill"><span>Git &amp; GitHub</span><div class="bar"><i style="--p:90%"></i></div></div>
+          <div class="skill"><span>Figma (handoff)</span><div class="bar"><i style="--p:65%"></i></div></div>
+          <div class="skill"><span>VS Code / Cursor</span><div class="bar"><i style="--p:93%"></i></div></div>
+        </div>
       </div>
     </section>
 
     <section id="contact" class="section contact">
-      <h2>Contact</h2>
-      <p>Open to collaboration on AI products and agents.</p>
-      <div class="actions">
-        <a class="btn primary" href="https://www.linkedin.com/in/amr-gamal-a274b9213/" target="_blank" rel="noopener">LinkedIn</a>
-        <a class="btn secondary" href="https://github.com/amrgamal194" target="_blank" rel="noopener">GitHub</a>
+      <h2 class="grad-cyan">Let's Connect</h2>
+      <p class="section-sub">Open to AI product work, agents, and thoughtful collaboration.</p>
+      <div class="contact-grid">
+        <form class="contact-form" id="contactForm" action="https://www.linkedin.com/in/amr-gamal-a274b9213/" method="get" target="_blank">
+          <label>Name<input type="text" name="name" placeholder="Your name" required /></label>
+          <label>Email<input type="email" name="email" placeholder="you@email.com" required /></label>
+          <label>Message<textarea name="message" rows="4" placeholder="Tell me about your project…" required></textarea></label>
+          <button class="btn btn-grad" type="submit">Open LinkedIn ↗</button>
+          <p class="form-note">Form opens LinkedIn so you can message me directly.</p>
+        </form>
+        <div class="contact-side">
+          <div class="bot-orb" aria-hidden="true">🤖</div>
+          <p class="quote">Ready to build the next intelligent product together.</p>
+          <a class="contact-btn" href="https://www.linkedin.com/in/amr-gamal-a274b9213/" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="contact-btn" href="https://github.com/amrgamal194" target="_blank" rel="noopener">GitHub</a>
+          <a class="contact-btn" href="https://amrgamal194.github.io/">Portfolio</a>
+        </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>© <span id="y"></span> Amr Gamal</p>
+    <p>© <span id="y"></span> Amr Gamal · Built for AI-era software</p>
   </footer>
   <script src="script.js"></script>
 </body>
