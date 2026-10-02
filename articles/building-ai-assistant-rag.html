@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Building an AI Assistant with RAG, Embeddings &amp; Vector Database</title>
+<style>
+  :root {
+    --bg: #0b1220;
+    --card: #111827;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --accent: #60a5fa;
+    --accent2: #a78bfa;
+    --code-bg: #0f172a;
+    --border: #1f2937;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, "Liberation Sans", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 15px;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 28px;
+    margin-bottom: 36px;
+  }
+  .eyebrow {
+    color: var(--accent2);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-size: 2.1rem;
+    line-height: 1.2;
+    margin: 0 0 14px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .subtitle { color: var(--muted); font-size: 1.05rem; margin: 0 0 18px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    border: 1px solid rgba(96,165,250,0.35);
+    background: rgba(59,130,246,0.12);
+    color: #93c5fd;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+  }
+  h2 {
+    font-size: 1.35rem;
+    margin: 40px 0 12px;
+    color: #fff;
+    border-left: 3px solid var(--accent2);
+    padding-left: 12px;
+  }
+  h3 { font-size: 1.05rem; margin: 24px 0 8px; color: #dbeafe; }
+  p { margin: 0 0 14px; }
+  ul, ol { margin: 0 0 16px; padding-left: 1.25rem; }
+  li { margin-bottom: 6px; }
+  pre, code {
+    font-family: "Liberation Mono", "DejaVu Sans Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 0 0 18px;
+    color: #d1fae5;
+  }
+  code { color: #93c5fd; }
+  pre code { color: inherit; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 20px;
+    font-size: 13.5px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #0f172a; color: #bfdbfe; }
+  .flow {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin: 0 0 18px;
+    color: #cbd5e1;
+    white-space: pre-line;
+    font-size: 14px;
+  }
+  .toc { columns: 2; gap: 24px; margin-bottom: 8px; }
+  .toc a { color: #93c5fd; text-decoration: none; }
+  .toc li { break-inside: avoid; }
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+  }
+  @media print {
+    body { background: #fff; color: #111; font-size: 11.5pt; }
+    h1 { color: #1e3a8a; background: none; -webkit-background-clip: unset; }
+    h2 { color: #111; border-left-color: #6366f1; }
+    h3 { color: #1e40af; }
+    .tag { color: #1e3a8a; border-color: #93c5fd; background: #eff6ff; }
+    pre { background: #f8fafc; color: #0f172a; border-color: #e2e8f0; }
+    th { background: #f1f5f9; color: #0f172a; }
+    .flow { background: #f8fafc; color: #334155; border-color: #e2e8f0; }
+    .toc a { color: #1d4ed8; }
+    .wrap { padding: 24px 18px; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Technical article · Oct 2026</div>
+  <h1>Building an AI Assistant with RAG, Embeddings &amp; Vector Database</h1>
+  <p class="subtitle">A complete technical journey from a simple LLM chatbot to a scalable RAG prototype.</p>
+  <div class="meta">
+    <span class="tag">RAG</span>
+    <span class="tag">AI</span>
+    <span class="tag">Laravel</span>
+    <span class="tag">FastAPI</span>
+    <span class="tag">ChromaDB</span>
+    <span class="tag">Embeddings</span>
+  </div>
+</header>
+
+<p><strong>Project:</strong> AI Assistant<br />
+<strong>Core stack:</strong> React · Laravel · FastAPI · Sentence Transformers · ChromaDB · GPT-5.6-mini</p>
+
+<h2>Contents</h2>
+<ol class="toc">
+  <li><a href="#s1">Project Goal and Architecture</a></li>
+  <li><a href="#s2">React Frontend</a></li>
+  <li><a href="#s3">Laravel Backend</a></li>
+  <li><a href="#s4">FastAPI AI Service</a></li>
+  <li><a href="#s5">LLM Integration</a></li>
+  <li><a href="#s6">Chat History</a></li>
+  <li><a href="#s7">Why RAG?</a></li>
+  <li><a href="#s8">Fake Embeddings and Cosine Similarity</a></li>
+  <li><a href="#s9">Real Embeddings with Sentence Transformers</a></li>
+  <li><a href="#s10">ChromaDB Vector Database</a></li>
+  <li><a href="#s11">Retrieval, Top-K and Threshold</a></li>
+  <li><a href="#s12">Prompt Builder and Grounded Answers</a></li>
+  <li><a href="#s13">10K Document Benchmark</a></li>
+  <li><a href="#s14">Dataset Diversity and Benchmark Lessons</a></li>
+  <li><a href="#s15">Scaling Roadmap: 100K → 1M</a></li>
+  <li><a href="#s16">Final Architecture and Key Lessons</a></li>
+</ol>
+
+<h2 id="s1">1. Project Goal and Architecture</h2>
+<p>The project was built from scratch to understand how modern AI applications are assembled rather than hiding the important steps behind a ready-made framework. The target was a knowledge-aware assistant that can retrieve project-specific information before asking an LLM to generate an answer.</p>
+
+<h3>High-level request flow</h3>
+<div class="flow">User
+↓
+React Frontend — Port 5173
+↓
+Laravel API — Port 8000
+↓
+FastAPI AI Service — Port 8001
+↓
+RAG Retrieval
+↓
+Relevant Context
+↓
+GPT-5.6-mini
+↓
+Final Answer</div>
+
+<p>The separation gives the application clear responsibilities. Laravel remains the main application/backend layer, while Python owns AI-specific workloads such as embeddings, retrieval and LLM orchestration.</p>
+
+<table>
+  <thead><tr><th>Layer</th><th>Technology</th><th>Responsibility</th></tr></thead>
+  <tbody>
+    <tr><td>Frontend</td><td>React + Vite</td><td>Chat UI, user interaction, history display</td></tr>
+    <tr><td>Backend</td><td>Laravel 12</td><td>API gateway / application backend</td></tr>
+    <tr><td>AI Service</td><td>FastAPI + Python</td><td>RAG, embeddings, retrieval, LLM orchestration</td></tr>
+    <tr><td>Embedding</td><td>Sentence Transformers</td><td>Convert text into semantic vectors</td></tr>
+    <tr><td>Vector DB</td><td>ChromaDB</td><td>Store and search embeddings</td></tr>
+    <tr><td>LLM</td><td>GPT-5.6-mini</td><td>Generate the final grounded answer</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s2">2. React Frontend</h2>
+<p>The frontend was created with Vite and React. Axios was installed to communicate with the backend. The UI evolved into a simple chat interface that can keep and display conversation history.</p>
+<pre><code>npm create vite@latest frontend -- --template react
+cd frontend
+npm install
+npm install axios
+npm run dev</code></pre>
+
+<h3>Frontend responsibility</h3>
+<div class="flow">User enters a message
+↓
+React sends HTTP request to Laravel
+↓
+Laravel forwards the request to the AI service
+↓
+Response returns to React
+↓
+React renders the assistant message and history</div>
+<p>The frontend is intentionally thin: it does not perform embeddings, vector search or direct database operations. Those concerns belong to the backend/AI service layers.</p>
+
+<h2 id="s3">3. Laravel Backend</h2>
+<p>Laravel 12.69.2 was used as the application backend and API gateway. A <code>POST /chat</code> route validates the request and forwards it to FastAPI.</p>
+<pre><code>use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
+Route::post('/chat', function (Request $request) {
+    $request->validate([
+        'message' => ['required', 'string'],
+    ]);
+
+    $response = Http::post('http://127.0.0.1:8001/chat', [
+        'message' => $request->message,
+    ]);
+
+    return response()->json(
+        $response->json(),
+        $response->status()
+    );
+});</code></pre>
+<p>This creates a clean boundary: React talks to Laravel, and Laravel talks to the AI service. Later, authentication, business rules, logging, rate limiting or persistence can be added to the Laravel layer without coupling those concerns to the Python code.</p>
+
+<h2 id="s4">4. FastAPI AI Service</h2>
+<p>The AI service was isolated in a Python virtual environment. FastAPI provides the HTTP API, while Python packages handle the AI pipeline.</p>
+<pre><code>mkdir ai-service
+cd ai-service
+python3 -m venv .venv
+source .venv/bin/activate
+pip install fastapi uvicorn
+pip install openai python-dotenv
+pip install sentence-transformers
+pip install chromadb</code></pre>
+<p>The first service exposed <code>/health</code> and <code>/chat</code>. This gave a stable place to add AI capabilities incrementally instead of building the entire RAG system at once.</p>
+<pre><code>class ChatRequest(BaseModel):
+    message: str</code></pre>
+<p>The <code>/chat</code> endpoint eventually accepted both the current message and optional history.</p>
+<pre><code>class Message(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    message: str
+    history: list[Message] = Field(default_factory=list)</code></pre>
+
+<h2 id="s5">5. LLM Integration</h2>
+<p>The first successful AI milestone was a direct call to the OpenAI Responses API using GPT-5.6-mini.</p>
+<pre><code>from openai import OpenAI
+
+client = OpenAI()
+response = client.responses.create(
+    model="gpt-5.6-mini",
+    input="Hello, how are you?"
+)
+print(response.output_text)</code></pre>
+
+<h3>Initial chatbot</h3>
+<div class="flow">User question
+↓
+FastAPI
+↓
+OpenAI Responses API
+↓
+GPT-5.6-mini
+↓
+Generated response</div>
+<p>This proved the basic LLM path worked. However, a general LLM response is not the same as a knowledge-grounded application. That gap led to the RAG part of the project.</p>
+
+<h2 id="s6">6. Chat History</h2>
+<p>Conversation history was added so the model could receive previous messages along with the current question.</p>
+<pre><code>messages = []
+for item in request.history:
+    messages.append({
+        "role": item.role,
+        "content": item.content
+    })
+messages.append({
+    "role": "user",
+    "content": request.message
+})
+response = client.responses.create(
+    model="gpt-5.6-mini",
+    instructions="You are a helpful AI assistant. Explain technical concepts in simple terms.",
+    input=messages
+)</code></pre>
+<p>An important distinction emerged: chat history represents the conversation, while RAG provides external/project knowledge. They can be combined, but they solve different problems.</p>
+<div class="flow">Chat History → remembers what was discussed
+↓
+RAG → retrieves relevant knowledge
+↓
+LLM → uses both to formulate a response</div>
+
+<h2 id="s7">7. Why RAG?</h2>
+<p>A normal chatbot follows the pattern Question → LLM → Answer. RAG inserts a retrieval stage before generation so the model receives relevant information from a controlled knowledge source.</p>
+<div class="flow">Documents
+↓
+Chunks
+↓
+Embeddings
+↓
+Vector Database
+↓
+Similarity / Semantic Search
+↓
+Relevant Documents
+↓
+Context
+↓
+Prompt
+↓
+LLM
+↓
+Grounded Answer</div>
+<p>The project used a small <strong>EcoLoop</strong> dataset as the initial knowledge base (a fictional recycling-platform sample knowledge base):</p>
+<pre><code>documents = [
+    "EcoLoop is a recycling platform in Egypt.",
+    "EcoLoop allows users to sell recyclable materials.",
+    "EcoLoop supports materials such as plastic, paper, metals and used cooking oil.",
+    "Users can request a pickup from the platform.",
+    "The collected materials are sent for recycling.",
+]</code></pre>
+
+<h2 id="s8">8. Fake Embeddings and Cosine Similarity</h2>
+<p>Before using a real embedding model, a simple keyword-based vector was built to understand the mechanics. It was deliberately educational rather than production quality.</p>
+<pre><code>return [
+    1 if "ecoloop" in text else 0,
+    1 if any(word in text for word in [
+        "material", "materials", "plastic",
+        "paper", "metals", "metal",
+        "oil", "recycling"
+    ]) else 0,
+    1 if any(word in text for word in [
+        "pickup", "request", "collect"
+    ]) else 0,
+    1 if any(word in text for word in [
+        "weather", "sunny"
+    ]) else 0,
+]</code></pre>
+<p>The next step was Cosine Similarity. The idea is to compare two vectors and estimate how close their directions are. High similarity means the representations are close; low similarity means they are less related.</p>
+<div class="flow">Text
+↓
+Simple vector representation
+↓
+Cosine similarity
+↓
+Rank documents
+↓
+Return top results</div>
+<p>This stage was useful for understanding the algorithm, but it exposed the limitations of handcrafted features. Real semantic retrieval requires learned embeddings.</p>
+
+<h2 id="s9">9. Real Embeddings with Sentence Transformers</h2>
+<p>The project moved from keyword vectors to a real embedding model: <code>all-MiniLM-L6-v2</code> through Sentence Transformers.</p>
+<pre><code>from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+def embed_text(text):
+    vector = model.encode(text)
+    return vector.tolist()
+
+def embed_texts(texts):
+    vectors = model.encode(
+        texts,
+        batch_size=32,
+        show_progress_bar=True
+    )
+    return vectors.tolist()</code></pre>
+<div class="flow">Human language text
+↓
+Sentence Transformer model
+↓
+Dense numerical vector
+↓
+Vector stored in / searched from Vector DB</div>
+<p>Batch embedding was introduced because embedding thousands of texts one at a time creates unnecessary overhead. Batch processing lets the model process multiple documents together.</p>
+
+<h2 id="s10">10. ChromaDB Vector Database</h2>
+<p>Once the project moved beyond a few documents, an actual vector database was needed. ChromaDB was selected for the local prototype and installed with pip.</p>
+<pre><code>pip install chromadb
+
+import chromadb
+
+client = chromadb.PersistentClient(path="./chroma_db")
+collection = client.get_or_create_collection(
+    name="ecoloop_documents"
+)</code></pre>
+<p>PersistentClient stores the vector database on disk rather than keeping everything only in process memory. Documents can be stored together with their embeddings and later queried semantically.</p>
+<pre><code>collection.add(
+    ids=[str(index)],
+    documents=[document],
+    embeddings=[embedding],
+)</code></pre>
+
+<h2 id="s11">11. Retrieval, Top-K and Threshold</h2>
+<p>Searching ChromaDB starts by embedding the user query and asking for the nearest documents.</p>
+<pre><code>def search_documents(query, top_k=2):
+    query_embedding = get_embedding(query)
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=top_k,
+    )
+    return results</code></pre>
+<p>The project then introduced filtering so that an irrelevant nearest neighbor would not automatically become context for the LLM.</p>
+<pre><code>for document, distance in zip(
+    results["documents"][0],
+    results["distances"][0]
+):
+    if distance &lt;= threshold:
+        documents.append(document)</code></pre>
+<p>A crucial discovery was that ChromaDB returns a distance metric in this configuration. Distance behaves opposite to similarity: lower is better. Therefore a comparison such as <code>distance &lt;= threshold</code> is required.</p>
+<div class="flow">Query embedding
+↓
+ChromaDB nearest neighbors
+↓
+Top-K candidates
+↓
+Distance check
+↓
+Relevant context OR reject</div>
+
+<h2 id="s12">12. Prompt Builder and Grounded Answers</h2>
+<p>Retrieved documents need to be turned into context before they are sent to the LLM. A prompt builder was created to explicitly instruct the model to stay inside the provided context.</p>
+<pre><code>def build_context(results):
+    return "\n\n".join(
+        result["document"]
+        for result in results
+    )
+
+def build_prompt(question, context):
+    return f'''
+Answer the question using only the provided context.
+Rules:
+- Do not use outside knowledge.
+- Do not invent information.
+- If the answer is not found in the context, say:
+"I don't have enough information in the provided context."
+Context:
+{context}
+Question:
+{question}
+Answer:
+'''</code></pre>
+<div class="flow">User Question + Retrieved Context + Instructions / Rules
+↓
+Augmented Prompt
+↓
+LLM
+↓
+Grounded Answer</div>
+<p>This design reduces the chance that the model answers an out-of-domain question using unrelated general knowledge, although prompt instructions alone are not a guarantee of perfect grounding.</p>
+
+<h2 id="s13">13. 10K Document Benchmark</h2>
+<p>After the functional RAG prototype worked, the project shifted toward scalability testing. The first target was 10,000 documents.</p>
+<pre><code>DOCUMENT_COUNT = 10000
+BATCH_SIZE = 500
+documents = generate_documents(DOCUMENT_COUNT)
+
+for start in range(0, DOCUMENT_COUNT, BATCH_SIZE):
+    end = min(start + BATCH_SIZE, DOCUMENT_COUNT)
+    batch = documents[start:end]
+    embeddings = embed_texts(batch)
+    ids = [str(i) for i in range(start, end)]
+    collection.upsert(
+        ids=ids,
+        documents=batch,
+        embeddings=embeddings
+    )</code></pre>
+<p>Upsert was used to make repeated benchmark runs safer: an existing ID can be updated instead of producing a duplicate-ID failure.</p>
+<p>Observed local indexing measurements included approximately 10.61 seconds in one run and around 20–23 seconds in later runs. These are environment-specific measurements, not universal ChromaDB performance figures.</p>
+<div class="flow">Generate 10,000 documents
+↓
+Split into batches of 500
+↓
+Batch embedding
+↓
+Upsert into ChromaDB
+↓
+Measure elapsed time
+↓
+Verify collection count</div>
+
+<h2 id="s14">14. Dataset Diversity and Benchmark Lessons</h2>
+<p>The first 10K dataset exposed a major benchmarking problem: many records were effectively copies of the same EcoLoop text. A large number of duplicate documents can measure ingestion speed, but it does not provide a strong test of semantic retrieval quality.</p>
+<p>A more varied generator was designed around topics such as materials, pickup, recycling, users, orders, companies, auctions, payments and platform operations.</p>
+<pre><code>topics = {
+    "materials": [...],
+    "pickup": [...],
+    "recycling": [...],
+    "users": [...],
+    "orders": [...],
+    "companies": [...],
+    "auctions": [...],
+    "payments": [...],
+    "platform": [...],
+}</code></pre>
+<p>The project also tested three useful query classes:</p>
+<table>
+  <thead><tr><th>Query type</th><th>Example</th><th>What it tests</th></tr></thead>
+  <tbody>
+    <tr><td>Relevant</td><td>What materials does EcoLoop accept?</td><td>Can the system retrieve known information?</td></tr>
+    <tr><td>Paraphrased relevant</td><td>How can users request a pickup?</td><td>Can semantic retrieval handle different wording?</td></tr>
+    <tr><td>Out-of-domain</td><td>What is Meta?</td><td>Can the system reject unrelated questions?</td></tr>
+  </tbody>
+</table>
+<p>One of the most important debugging discoveries was that a relevant pickup document could be returned by ChromaDB with a distance around 1.86, but a threshold of 0.70 filtered it out. This demonstrated that retrieval can succeed while filtering fails.</p>
+<div class="flow">Question: pickup
+↓
+Embedding
+↓
+ChromaDB finds the correct pickup document
+↓
+Distance ≈ 1.86
+↓
+Threshold = 0.70
+↓
+Result rejected
+↓
+Conclusion: filtering threshold needs evaluation</div>
+
+<h2 id="s15">15. Scaling Roadmap: 100K → 1M</h2>
+<p>The next objective is to repeat the experiment at 100,000 and eventually 1,000,000 documents. The purpose is not simply to make the number bigger; it is to understand how indexing, storage and retrieval behave as the knowledge base grows.</p>
+<div class="flow">10K — establish baseline
+↓
+100K — measure growth and bottlenecks
+↓
+1M — test large-scale local prototype</div>
+<p>For each scale, the benchmark should record:</p>
+<table>
+  <thead><tr><th>Metric</th><th>Question</th></tr></thead>
+  <tbody>
+    <tr><td>Indexing time</td><td>How long does ingestion take?</td></tr>
+    <tr><td>Embedding time</td><td>How much time is spent creating vectors?</td></tr>
+    <tr><td>Storage size</td><td>How large is the ChromaDB data on disk?</td></tr>
+    <tr><td>Search latency</td><td>How many milliseconds does a query take?</td></tr>
+    <tr><td>Top-K retrieval</td><td>Does the correct document appear in top 1/3/5/10?</td></tr>
+    <tr><td>Rejection quality</td><td>Are unrelated queries rejected?</td></tr>
+  </tbody>
+</table>
+<p>A strong future benchmark should also maintain a ground-truth set: each test query should have one or more known relevant documents. That makes retrieval quality measurable rather than subjective.</p>
+
+<h2 id="s16">16. Final Architecture and Key Lessons</h2>
+<div class="flow">React — chat interface
+↓
+Laravel — application API / gateway
+↓
+FastAPI — AI orchestration
+↓
+Query embedding
+↓
+ChromaDB semantic retrieval
+↓
+Top-K + relevance filtering
+↓
+Context construction
+↓
+Prompt / grounding instructions
+↓
+GPT-5.6-mini
+↓
+Final response</div>
+<p>The project has therefore evolved from a simple LLM call into a complete AI application prototype. Each layer was introduced only after the previous layer was understood and tested.</p>
+<p>The most important lesson is that a good RAG answer is not created by the LLM alone. The final quality depends on the entire pipeline:</p>
+<div class="flow">Dataset quality
+↓
+Chunking strategy
+↓
+Embedding model
+↓
+Vector database
+↓
+Retrieval strategy
+↓
+Top-K and threshold
+↓
+Context construction
+↓
+Prompt design
+↓
+LLM generation</div>
+<p><strong>Key principle:</strong> when an AI answer is wrong, debug the pipeline stage by stage instead of assuming the LLM is the problem. Retrieval can fail, filtering can fail, context can be incomplete, or the dataset can be poor.</p>
+<p>The next practical milestone is to fix and verify the varied 10K dataset, rebuild the ChromaDB index from a clean state, establish a reliable retrieval benchmark, then scale to 100K and 1M documents.</p>
+
+<footer>
+  End of technical guide · Building an AI Assistant with RAG, Embeddings &amp; Vector Database · Oct 2026
+</footer>
+</div>
+</body>
+</html>
